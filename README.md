@@ -34,6 +34,7 @@ Install the dependencies and devDependencies and start the server.
 
 ```sh
 $ npm i -g parcel # if you don't have already
+$ npm install
 $ npm start
 ```
 ### Build
