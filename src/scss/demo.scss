@@ -1,0 +1,80 @@
+:root {
+  font-size: 14px
+}
+
+*, ::after, ::before {
+  box-sizing: inherit;
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  list-style: none
+}
+
+body {
+  color: #606c76;
+  font-family: 'Nunito';
+  font-size: 1em;
+  font-weight: 400;
+  letter-spacing: .01em;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 660px;
+  margin: 75px auto;
+  background: #fff;
+  border-radius: 4px;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
+
+  main {
+    background: $main;
+    padding: 2em;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+
+    h1 {
+      font-size: 2em;
+      font-weight: 700;
+      color: $dark;
+    }
+
+    p {
+      font-size: 1em;
+      margin: .5em 0;
+      color: $dark
+    }
+
+    .btn {
+      margin-top: 1em
+    }
+
+  }
+
+  .card-content {
+    padding: 2em
+  }
+
+}
+
+.btn {
+  padding: .8em 2em;
+  background: $dark;
+  display: inline-flex;
+  font-size: .8em;
+  color: #fff;
+  font-weight: 700;
+  border-radius: 3px;
+  transition: all 500ms;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  svg {
+    fill: #fff;
+    width: 20px;
+    margin-right: 10px;
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "hipsbar",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "npm run dev",
+    "dev": "parcel index.html --out-dir ./docs -p 8080",
+    "build": "parcel build ./src/Hipsbar.js --no-source-maps"
+  },
+  "devDependencies": {
+    "cssnano": "^4.0.5",
+    "node-sass": "^4.9.2"
+  }
+}
