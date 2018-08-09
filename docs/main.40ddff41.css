@@ -73,6 +73,18 @@ body {
   .hipsbar--overlay.is--active {
     opacity: 1;
     visibility: visible; }
+  .hipsbar--overlay.is--blurred {
+    -webkit-filter: blur(5px);
+    -moz-filter: blur(5px);
+    -o-filter: blur(5px);
+    -ms-filter: blur(5px);
+    filter: blur(5px); }
+
+/*
+  Blur nodes except active hipsbar
+*/
+body.blurred--overlay > *:not(.is--active) {
+  filter: blur(5px); }
 
 .hipsbar--wrapper {
   height: 100vh;

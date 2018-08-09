@@ -221,6 +221,7 @@ var Hipsbar = function () {
     var activator = options.activator,
         data = options.data,
         overlay = options.overlay,
+        blur = options.blur,
         position = options.position,
         width = options.width;
 
@@ -228,6 +229,7 @@ var Hipsbar = function () {
     this.activator = activator;
     this.data = data || [];
     this.overlay = overlay || false;
+    this.blur = blur || false;
     this.position = position || 'left';
     this.width = width || 360;
 
@@ -271,8 +273,11 @@ var Hipsbar = function () {
       var el = this.activatorNode;
       el.setAttribute('data-hipsbar-activator', this.activator);
       el.addEventListener('click', function (e) {
-        _this.handleOverlay();
         _this.hipsbar.classList.toggle('is--active');
+        setTimeout(function () {
+          _this.handleOverlay();
+          _this.addBlur();
+        }, 0);
         e.preventDefault();
       });
     }
@@ -291,6 +296,7 @@ var Hipsbar = function () {
     key: 'closeHipsbar',
     value: function closeHipsbar() {
       document.querySelector('.hipsbar--overlay').classList.remove('is--active');
+      document.body.classList.remove('blurred--overlay');
       this.hipsbar.classList.remove('is--active');
     }
   }, {
@@ -301,12 +307,17 @@ var Hipsbar = function () {
       }
     }
   }, {
+    key: 'addBlur',
+    value: function addBlur() {
+      if (this.blur) {
+        document.body.classList.add('blurred--overlay');
+      }
+    }
+  }, {
     key: 'handleOverlay',
     value: function handleOverlay() {
       if (this.overlay) {
-        setTimeout(function () {
-          document.querySelector('.hipsbar--overlay').classList.add('is--active');
-        }, 0);
+        document.querySelector('.hipsbar--overlay').classList.add('is--active');
       }
     }
   }, {
@@ -370,7 +381,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '49607' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '60164' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 

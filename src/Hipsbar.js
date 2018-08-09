@@ -10,6 +10,7 @@ class Hipsbar {
       activator,
       data,
       overlay,
+      blur,
       position,
       width,
     } = options
@@ -17,6 +18,7 @@ class Hipsbar {
     this.activator = activator
     this.data = data || []
     this.overlay = overlay || false
+    this.blur = blur || false
     this.position = position || 'left'
     this.width = width || 360
 
@@ -54,8 +56,11 @@ class Hipsbar {
     const el = this.activatorNode
     el.setAttribute('data-hipsbar-activator', this.activator)
     el.addEventListener('click', e => {
-      this.handleOverlay()
       this.hipsbar.classList.toggle('is--active')
+      setTimeout(() => {
+        this.handleOverlay()
+        this.addBlur()
+      }, 0)
       e.preventDefault()
     })
   }
@@ -74,6 +79,7 @@ class Hipsbar {
 
   closeHipsbar() {
     document.querySelector('.hipsbar--overlay').classList.remove('is--active')
+    document.body.classList.remove('blurred--overlay')
     this.hipsbar.classList.remove('is--active')
   }
 
@@ -83,11 +89,15 @@ class Hipsbar {
     }
   }
 
+  addBlur() {
+    if (this.blur) {
+      document.body.classList.add('blurred--overlay')
+    }
+  }
+
   handleOverlay() {
     if (this.overlay) {
-      setTimeout(() => {
-        document.querySelector('.hipsbar--overlay').classList.add('is--active')
-      }, 0);
+      document.querySelector('.hipsbar--overlay').classList.add('is--active')
     }
   }
 
