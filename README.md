@@ -23,9 +23,12 @@ const data = [
 ];
 
 new Hipsbar({
-  activator: `#activator-from-left`,
-  data,
-  position: 'left'
+  activator: `#hipsbar-activator`, // required
+  data, // default <Array empty>[]
+  position: 'left', // default left
+  overlay: true, // default false
+  blur: true, // default false
+  width: 300 // default 350
 })
 ```
 
