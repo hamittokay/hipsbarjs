@@ -1,11 +1,13 @@
 $main: #00E676;
 $dark: #263238;
 
+@import './components/overlay';
+
 .hipsbar--wrapper {
   height: 100vh;
   background: $dark;
   position: fixed;
-  z-index: 9999;
+  z-index: 99999;
   width: 100%;
   transition: all 450ms;
 

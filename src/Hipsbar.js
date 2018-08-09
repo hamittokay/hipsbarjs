@@ -1,5 +1,9 @@
 import './scss/hipsbar.scss'
 
+import {
+  createOverlay
+} from './lib'
+
 class Hipsbar {
   constructor(options) {
     const {
@@ -10,32 +14,33 @@ class Hipsbar {
       width,
     } = options
 
-    this.activatorId = activator
-    this.activator = document.querySelector(this.activatorId)
+    this.activator = activator
     this.data = data || []
     this.overlay = overlay || false
     this.position = position || 'left'
     this.width = width || 360
-    this.hipsbar = null
 
+    this.hipsbar = null
+    this.activatorNode = document.querySelector(this.activator)
+    
     this.initHipsbar()
   }
 
   initNodes() {
-    const LIST = document.createElement('ul')
+    const list = document.createElement('ul')
 
     this.data.forEach(({ content, url }) => {
-      const LIST_ITEM = document.createElement('li')
-      const LIST_ITEM_LINK = document.createElement('a')
+      const listItem = document.createElement('li')
+      const listItemLink = document.createElement('a')
 
-      LIST_ITEM_LINK.innerHTML = content
-      LIST_ITEM_LINK.setAttribute('href', url)
+      listItemLink.innerHTML = content
+      listItemLink.setAttribute('href', url)
 
-      LIST_ITEM.appendChild(LIST_ITEM_LINK)
-      LIST.appendChild(LIST_ITEM)
+      listItem.appendChild(listItemLink)
+      list.appendChild(listItem)
     })
 
-    return LIST
+    return list
   }
 
   isFullWidth() {
@@ -46,9 +51,10 @@ class Hipsbar {
   }
 
   addActivatorListener() {
-    const el = this.activator
-    el.setAttribute('data-hipsbar-activator', this.activatorId)
+    const el = this.activatorNode
+    el.setAttribute('data-hipsbar-activator', this.activator)
     el.addEventListener('click', e => {
+      this.handleOverlay()
       this.hipsbar.classList.toggle('is--active')
       e.preventDefault()
     })
@@ -59,7 +65,7 @@ class Hipsbar {
       if (
           e.target !== this.hipsbar &&
           !this.hipsbar.contains(e.target) &&
-          e.target !== this.activator
+          e.target !== this.activatorNode
         ) {
         this.closeHipsbar()
       }
@@ -67,26 +73,46 @@ class Hipsbar {
   }
 
   closeHipsbar() {
+    document.querySelector('.hipsbar--overlay').classList.remove('is--active')
     this.hipsbar.classList.remove('is--active')
+  }
+
+  addOverlay() {
+    if (this.overlay) {
+      createOverlay()
+    }
+  }
+
+  handleOverlay() {
+    if (this.overlay) {
+      setTimeout(() => {
+        document.querySelector('.hipsbar--overlay').classList.add('is--active')
+      }, 0);
+    }
+  }
+
+  initHooks() {
+    this.addOverlay()
+    this.addActivatorListener()
+    this.addCloseListener()
   }
  
   initHipsbar() {
-    const HIPSBAR = document.createElement('div')
-    HIPSBAR.classList.add('hipsbar--wrapper', `is--${this.position}`)
+    const hipsbar = document.createElement('div')
+    hipsbar.classList.add('hipsbar--wrapper', `is--${this.position}`)
 
     if (!this.isFullWidth()) {
-      HIPSBAR.style.width = `${this.width}px`
+      hipsbar.style.width = `${this.width}px`
     }
 
-    const LIST = this.initNodes()
-    HIPSBAR.setAttribute('data-hipsbar', this.activatorId)
+    const list = this.initNodes()
+    hipsbar.setAttribute('data-hipsbar', this.activator)
 
-    HIPSBAR.appendChild(LIST)
-    document.body.appendChild(HIPSBAR)
+    hipsbar.appendChild(list)
+    document.body.appendChild(hipsbar)
 
-    this.hipsbar = HIPSBAR
-    this.addActivatorListener()
-    this.addCloseListener()
+    this.hipsbar = hipsbar
+    this.initHooks()
   }
 }
 

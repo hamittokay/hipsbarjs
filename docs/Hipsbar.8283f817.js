@@ -169,12 +169,48 @@ module.exports = reloadCSS;
 var reloadCSS = require('_css_loader');
 module.hot.dispose(reloadCSS);
 module.hot.accept(reloadCSS);
-},{"_css_loader":"../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/css-loader.js"}],"src/Hipsbar.js":[function(require,module,exports) {
+},{"_css_loader":"../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/css-loader.js"}],"src/lib/helpers.js":[function(require,module,exports) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var createOverlay = exports.createOverlay = function createOverlay() {
+  var overlay = document.querySelector('.hipsbar--overlay');
+
+  if (!document.contains(overlay)) {
+    var overlayNode = document.createElement('div');
+    overlayNode.classList.add('hipsbar--overlay');
+
+    document.body.appendChild(overlayNode);
+  }
+};
+},{}],"src/lib/index.js":[function(require,module,exports) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+
+var _helpers = require('./helpers');
+
+Object.keys(_helpers).forEach(function (key) {
+  if (key === "default" || key === "__esModule") return;
+  Object.defineProperty(exports, key, {
+    enumerable: true,
+    get: function () {
+      return _helpers[key];
+    }
+  });
+});
+},{"./helpers":"src/lib/helpers.js"}],"src/Hipsbar.js":[function(require,module,exports) {
 'use strict';
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 require('./scss/hipsbar.scss');
+
+var _lib = require('./lib');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -189,13 +225,14 @@ var Hipsbar = function () {
         width = options.width;
 
 
-    this.activatorId = activator;
-    this.activator = document.querySelector(this.activatorId);
+    this.activator = activator;
     this.data = data || [];
     this.overlay = overlay || false;
     this.position = position || 'left';
     this.width = width || 360;
+
     this.hipsbar = null;
+    this.activatorNode = document.querySelector(this.activator);
 
     this.initHipsbar();
   }
@@ -203,23 +240,23 @@ var Hipsbar = function () {
   _createClass(Hipsbar, [{
     key: 'initNodes',
     value: function initNodes() {
-      var LIST = document.createElement('ul');
+      var list = document.createElement('ul');
 
       this.data.forEach(function (_ref) {
         var content = _ref.content,
             url = _ref.url;
 
-        var LIST_ITEM = document.createElement('li');
-        var LIST_ITEM_LINK = document.createElement('a');
+        var listItem = document.createElement('li');
+        var listItemLink = document.createElement('a');
 
-        LIST_ITEM_LINK.innerHTML = content;
-        LIST_ITEM_LINK.setAttribute('href', url);
+        listItemLink.innerHTML = content;
+        listItemLink.setAttribute('href', url);
 
-        LIST_ITEM.appendChild(LIST_ITEM_LINK);
-        LIST.appendChild(LIST_ITEM);
+        listItem.appendChild(listItemLink);
+        list.appendChild(listItem);
       });
 
-      return LIST;
+      return list;
     }
   }, {
     key: 'isFullWidth',
@@ -231,9 +268,10 @@ var Hipsbar = function () {
     value: function addActivatorListener() {
       var _this = this;
 
-      var el = this.activator;
-      el.setAttribute('data-hipsbar-activator', this.activatorId);
+      var el = this.activatorNode;
+      el.setAttribute('data-hipsbar-activator', this.activator);
       el.addEventListener('click', function (e) {
+        _this.handleOverlay();
         _this.hipsbar.classList.toggle('is--active');
         e.preventDefault();
       });
@@ -244,7 +282,7 @@ var Hipsbar = function () {
       var _this2 = this;
 
       document.addEventListener('click', function (e) {
-        if (e.target !== _this2.hipsbar && !_this2.hipsbar.contains(e.target) && e.target !== _this2.activator) {
+        if (e.target !== _this2.hipsbar && !_this2.hipsbar.contains(e.target) && e.target !== _this2.activatorNode) {
           _this2.closeHipsbar();
         }
       });
@@ -252,27 +290,50 @@ var Hipsbar = function () {
   }, {
     key: 'closeHipsbar',
     value: function closeHipsbar() {
+      document.querySelector('.hipsbar--overlay').classList.remove('is--active');
       this.hipsbar.classList.remove('is--active');
+    }
+  }, {
+    key: 'addOverlay',
+    value: function addOverlay() {
+      if (this.overlay) {
+        (0, _lib.createOverlay)();
+      }
+    }
+  }, {
+    key: 'handleOverlay',
+    value: function handleOverlay() {
+      if (this.overlay) {
+        setTimeout(function () {
+          document.querySelector('.hipsbar--overlay').classList.add('is--active');
+        }, 0);
+      }
+    }
+  }, {
+    key: 'initHooks',
+    value: function initHooks() {
+      this.addOverlay();
+      this.addActivatorListener();
+      this.addCloseListener();
     }
   }, {
     key: 'initHipsbar',
     value: function initHipsbar() {
-      var HIPSBAR = document.createElement('div');
-      HIPSBAR.classList.add('hipsbar--wrapper', 'is--' + this.position);
+      var hipsbar = document.createElement('div');
+      hipsbar.classList.add('hipsbar--wrapper', 'is--' + this.position);
 
       if (!this.isFullWidth()) {
-        HIPSBAR.style.width = this.width + 'px';
+        hipsbar.style.width = this.width + 'px';
       }
 
-      var LIST = this.initNodes();
-      HIPSBAR.setAttribute('data-hipsbar', this.activatorId);
+      var list = this.initNodes();
+      hipsbar.setAttribute('data-hipsbar', this.activator);
 
-      HIPSBAR.appendChild(LIST);
-      document.body.appendChild(HIPSBAR);
+      hipsbar.appendChild(list);
+      document.body.appendChild(hipsbar);
 
-      this.hipsbar = HIPSBAR;
-      this.addActivatorListener();
-      this.addCloseListener();
+      this.hipsbar = hipsbar;
+      this.initHooks();
     }
   }]);
 
@@ -280,7 +341,7 @@ var Hipsbar = function () {
 }();
 
 window.Hipsbar = Hipsbar;
-},{"./scss/hipsbar.scss":"src/scss/hipsbar.scss"}],"../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
+},{"./scss/hipsbar.scss":"src/scss/hipsbar.scss","./lib":"src/lib/index.js"}],"../../../.config/yarn/global/node_modules/parcel-bundler/src/builtins/hmr-runtime.js":[function(require,module,exports) {
 var global = arguments[3];
 var OVERLAY_ID = '__parcel__error__overlay__';
 
@@ -309,7 +370,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '51275' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '49607' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 

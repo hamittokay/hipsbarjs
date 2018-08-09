@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>HipsbarJS</title>
+  <meta name=viewport content="user-scalable=no,initial-scale=1,maximum-scale=1,minimum-scale=1,width=device-width,height=device-height">
   <link href="https://fonts.googleapis.com/css?family=Nunito:400,700" rel="stylesheet">
   <!-- For Demo Only -->
   <link rel="stylesheet" href="./src/scss/main.scss">
@@ -43,7 +44,8 @@
         new Hipsbar({
           activator: `#activator-from-${position}`,
           data,
-          position
+          position,
+          overlay: true
         })
       })
   </script>
