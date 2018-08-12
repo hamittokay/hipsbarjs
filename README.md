@@ -41,7 +41,7 @@ const data = [
   ...
   {
     content: 'LANGUAGES',
-    children: {
+    children: [
       {
         content: 'VUE',
         url: 'https://vuejs.org',
@@ -58,7 +58,7 @@ const data = [
           url: 'https://redux.js.org/'
         ]
       }
-    }
+    ]
   }
   ...
 ]
