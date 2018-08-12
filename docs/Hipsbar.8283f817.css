@@ -26,13 +26,29 @@
 body.blurred--overlay > *:not(.is--active) {
   filter: blur(5px); }
 
+*, ::after, ::before {
+  box-sizing: inherit;
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  list-style: none; }
+
+body {
+  color: #606c76;
+  font-family: 'Nunito', 'Helvetica Neue';
+  font-size: 1em;
+  font-weight: 400;
+  letter-spacing: .01em;
+  line-height: 1.6; }
+
 .hipsbar--wrapper {
   height: 100vh;
   background: #263238;
   position: fixed;
   z-index: 99999;
   width: 100%;
-  transition: all 450ms; }
+  transition: all 450ms;
+  overflow-y: scroll; }
   .hipsbar--wrapper.is--left {
     top: 0;
     left: 0;
@@ -43,6 +59,12 @@ body.blurred--overlay > *:not(.is--active) {
     top: 0;
     right: 0;
     transform: translateX(100%); }
+    .hipsbar--wrapper.is--right .has--children .arrow {
+      right: 0;
+      left: 1.5rem; }
+    .hipsbar--wrapper.is--right .has--children .child--parent-item {
+      padding-left: 0;
+      padding-right: 15px; }
     .hipsbar--wrapper.is--right.is--active {
       transform: translateX(0); }
     .hipsbar--wrapper.is--right ul li a {
@@ -58,6 +80,8 @@ body.blurred--overlay > *:not(.is--active) {
     .hipsbar--wrapper.is--top ul, .hipsbar--wrapper.is--bottom ul {
       margin: 10px 2.5px;
       display: flex; }
+      .hipsbar--wrapper.is--top ul.child--parent-item, .hipsbar--wrapper.is--bottom ul.child--parent-item {
+        padding: 0 !important; }
       .hipsbar--wrapper.is--top ul li, .hipsbar--wrapper.is--bottom ul li {
         flex-basis: 100%;
         margin: 0 5px; }
@@ -72,6 +96,22 @@ body.blurred--overlay > *:not(.is--active) {
       transform: translateY(0); }
   .hipsbar--wrapper ul {
     margin: 50px 0; }
+    .hipsbar--wrapper ul li:hover > a, .hipsbar--wrapper ul li.is--active > a {
+      background: #1e282d; }
+    .hipsbar--wrapper ul li.has--children {
+      position: relative; }
+      .hipsbar--wrapper ul li.has--children.is--active > .arrow {
+        transform: rotate(-180deg); }
+      .hipsbar--wrapper ul li.has--children.is--active > .child--parent-item {
+        display: block;
+        padding-left: 15px;
+        background: #1e282d; }
+        .hipsbar--wrapper ul li.has--children.is--active > .child--parent-item a:hover {
+          background: #161e23; }
+      .hipsbar--wrapper ul li.has--children .child--parent-item {
+        margin: 0;
+        display: none;
+        transition: all 300ms; }
     .hipsbar--wrapper ul li a {
       height: 50px;
       display: flex;
@@ -80,5 +120,10 @@ body.blurred--overlay > *:not(.is--active) {
       color: #fff;
       font-size: .8em;
       transition: all 300ms; }
-      .hipsbar--wrapper ul li a:hover {
-        background: #1e282d; }
+    .hipsbar--wrapper ul li .arrow {
+      position: absolute;
+      right: 1.5rem;
+      top: 10px;
+      width: 17px;
+      height: 30px;
+      transition: all 300ms; }

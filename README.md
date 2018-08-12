@@ -32,9 +32,39 @@ new Hipsbar({
 })
 ```
 
+### Add Child Items
+Your items can have child items as many as you want. Hipsbar will mount them to DOM recursively.
+##### Usage
+```javascript
+const data = [
+  ...
+  {
+    content: 'LANGUAGES',
+    children: {
+      {
+        content: 'VUE',
+        url: 'https://vuejs.org',
+        children: [
+          content: 'VUEX',
+          url: 'https://vuex.vuejs.org/guide'
+        ]
+      },
+      {
+        content: 'REACT',
+        url: 'http://reactjs.org/',
+        children: [
+          content: 'REDUX',
+          url: 'https://redux.js.org/'
+        ]
+      }
+    }
+  }
+  ...
+]
+```
+
 ### Installation
 Install the dependencies and devDependencies and start the server.
-
 ```sh
 $ npm i -g parcel # if you don't have already
 $ npm install
@@ -48,6 +78,5 @@ License
 ----
 
 MIT
-
 
 **Free Software, Hell Yeah!**

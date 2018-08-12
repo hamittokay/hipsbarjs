@@ -29,22 +29,15 @@
 
   <script src="./src/Hipsbar.js"></script>
   <script>
-    const data = [
-      { content: 'HOME', url: '#' },
-      { content: 'PRODUCTS', url: '#' },
-      { content: 'DEVELOPERS', url: '#' },
-      { content: 'CONTACT', url: '#' },
-      { content: 'API', url: '#' },
-      { content: 'GITHUB', url: '#' },
-    ]
+    // const data = [{"content": "HOME","url": "#"},{"content": "LANGS","url": "#","children": [{"content": "JAVASCRIPT","url": "#","children": [{"content": "Vue","href": "#"},{"content": "React","href": "#"},{"content": "Angular","href": "#"},]},{"content": "JAVA","url": "#",},{"content": "C#","url": "#",},{"content": "ELM","url": "#",},{"content": "GO","url": "#",},]},{"content": "DEVELOPERS","url": "#"},{"content": "API","url": "#"},{"content": "CONTACT","url": "#"},{"content": "BLOG","url": "#"},]
 
+    const dataURL = 'https://api.myjson.com/bins/191ibw'
     const positions = ['top', 'right', 'bottom', 'left']
-
     positions.forEach(position => {
         new Hipsbar({
           activator: `#activator-from-${position}`,
-          data,
           position,
+          dataURL,
           overlay: true,
           blur: true,
           width: 300

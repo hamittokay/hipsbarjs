@@ -1,7 +1,8 @@
 import './scss/hipsbar.scss'
 
 import {
-  createOverlay
+  createOverlay,
+  createChildNodes
 } from './lib'
 
 class Hipsbar {
@@ -17,6 +18,7 @@ class Hipsbar {
 
     this.activator = activator
     this.data = data || []
+    this.dataURL = dataURL || []
     this.overlay = overlay || false
     this.blur = blur || false
     this.position = position || 'left'
@@ -24,14 +26,14 @@ class Hipsbar {
 
     this.hipsbar = null
     this.activatorNode = document.querySelector(this.activator)
-    
+
     this.initHipsbar()
   }
 
-  initNodes() {
+  initNodes(data) {
     const list = document.createElement('ul')
 
-    this.data.forEach(({ content, url }) => {
+    data.forEach(({ content, url, children }) => {
       const listItem = document.createElement('li')
       const listItemLink = document.createElement('a')
 
@@ -40,16 +42,34 @@ class Hipsbar {
 
       listItem.appendChild(listItemLink)
       list.appendChild(listItem)
+
+      if (children) {
+        createChildNodes(listItem, children)
+      }
     })
 
-    return list
+    this.hipsbar.setAttribute('data-hipsbar', this.activator)
+    this.hipsbar.appendChild(list)
+    document.body.appendChild(this.hipsbar)
   }
 
-  isFullWidth() {
+  get isFullWidth() {
     return (
       this.position == 'bottom' ||
       this.position == 'top'
     )
+  }
+
+  initData() {
+    if (this.dataURL) {
+      fetch(this.dataURL)
+        .then(res => res.json())
+        .then(data => {
+          this.initNodes(data)
+        })
+    } else {
+      this.initNodes(this.data)
+    }
   }
 
   addActivatorListener() {
@@ -66,26 +86,32 @@ class Hipsbar {
   }
 
   addCloseListener() {
-    document.addEventListener('click', e => {
-      if (
-          e.target !== this.hipsbar &&
-          !this.hipsbar.contains(e.target) &&
-          e.target !== this.activatorNode
-        ) {
-        this.closeHipsbar()
-      }
+    window.addEventListener('click', e => {
+      this.closeHipsbar()
+    })
+    this.hipsbar.addEventListener('click', (e) => {
+      e.stopPropagation()
+    })
+    this.activatorNode.addEventListener('click', (e) => {
+      e.stopPropagation()
     })
   }
 
   closeHipsbar() {
-    document.querySelector('.hipsbar--overlay').classList.remove('is--active')
     document.body.classList.remove('blurred--overlay')
     this.hipsbar.classList.remove('is--active')
+    this.closeOverlay()
   }
 
   addOverlay() {
     if (this.overlay) {
       createOverlay()
+    }
+  }
+
+  closeOverlay() {
+    if (this.overlay) {
+      document.querySelector('.hipsbar--overlay').classList.remove('is--active')
     }
   }
 
@@ -101,25 +127,23 @@ class Hipsbar {
     }
   }
 
+  initStyles() {
+    if (!this.isFullWidth) {
+      this.hipsbar.style.width = `${this.width}px`
+    }
+  }
+
   initHooks() {
+    this.initData()
+    this.initStyles()
     this.addOverlay()
     this.addActivatorListener()
     this.addCloseListener()
   }
- 
+
   initHipsbar() {
     const hipsbar = document.createElement('div')
     hipsbar.classList.add('hipsbar--wrapper', `is--${this.position}`)
-
-    if (!this.isFullWidth()) {
-      hipsbar.style.width = `${this.width}px`
-    }
-
-    const list = this.initNodes()
-    hipsbar.setAttribute('data-hipsbar', this.activator)
-
-    hipsbar.appendChild(list)
-    document.body.appendChild(hipsbar)
 
     this.hipsbar = hipsbar
     this.initHooks()

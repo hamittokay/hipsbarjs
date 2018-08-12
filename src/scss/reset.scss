@@ -1,0 +1,17 @@
+
+*, ::after, ::before {
+  box-sizing: inherit;
+  text-decoration: none;
+  margin: 0;
+  padding: 0;
+  list-style: none
+}
+
+body {
+  color: #606c76;
+  font-family: 'Nunito', 'Helvetica Neue';
+  font-size: 1em;
+  font-weight: 400;
+  letter-spacing: .01em;
+  line-height: 1.6;
+}

@@ -175,6 +175,8 @@ module.hot.accept(reloadCSS);
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+var ARROW_ICON = '<svg class="arrow" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" viewBox="0 0 129 129" enable-background="new 0 0 129 129" width="512px" height="512px"><g><path d="m121.3,34.6c-1.6-1.6-4.2-1.6-5.8,0l-51,51.1-51.1-51.1c-1.6-1.6-4.2-1.6-5.8,0-1.6,1.6-1.6,4.2 0,5.8l53.9,53.9c0.8,0.8 1.8,1.2 2.9,1.2 1,0 2.1-0.4 2.9-1.2l53.9-53.9c1.7-1.6 1.7-4.2 0.1-5.8z" fill="#FFFFFF"/></g></svg>';
+
 var createOverlay = exports.createOverlay = function createOverlay() {
   var overlay = document.querySelector('.hipsbar--overlay');
 
@@ -184,6 +186,36 @@ var createOverlay = exports.createOverlay = function createOverlay() {
 
     document.body.appendChild(overlayNode);
   }
+};
+
+var createChildNodes = exports.createChildNodes = function createChildNodes(listItem, children) {
+  listItem.classList.add('has--children');
+  listItem.innerHTML += ARROW_ICON;
+
+  var childParentNode = document.createElement('ul');
+  childParentNode.classList.add('child--parent-item');
+
+  children.forEach(function (child, i) {
+    var childNode = document.createElement('li');
+    var childNodeLink = document.createElement('a');
+
+    childNodeLink.innerHTML = child.content;
+    childNodeLink.setAttribute('href', child.url);
+
+    childNode.appendChild(childNodeLink);
+    childParentNode.appendChild(childNode);
+
+    if (child.children) {
+      createChildNodes(childNode, child.children);
+    }
+  });
+
+  listItem.querySelectorAll('a')[0].addEventListener('click', function (e) {
+    listItem.classList.toggle('is--active');
+    e.preventDefault();
+  });
+
+  listItem.appendChild(childParentNode);
 };
 },{}],"src/lib/index.js":[function(require,module,exports) {
 'use strict';
@@ -228,6 +260,7 @@ var Hipsbar = function () {
 
     this.activator = activator;
     this.data = data || [];
+    this.dataURL = dataURL || [];
     this.overlay = overlay || false;
     this.blur = blur || false;
     this.position = position || 'left';
@@ -241,12 +274,13 @@ var Hipsbar = function () {
 
   _createClass(Hipsbar, [{
     key: 'initNodes',
-    value: function initNodes() {
+    value: function initNodes(data) {
       var list = document.createElement('ul');
 
-      this.data.forEach(function (_ref) {
+      data.forEach(function (_ref) {
         var content = _ref.content,
-            url = _ref.url;
+            url = _ref.url,
+            children = _ref.children;
 
         var listItem = document.createElement('li');
         var listItemLink = document.createElement('a');
@@ -256,27 +290,43 @@ var Hipsbar = function () {
 
         listItem.appendChild(listItemLink);
         list.appendChild(listItem);
+
+        if (children) {
+          (0, _lib.createChildNodes)(listItem, children);
+        }
       });
 
-      return list;
+      this.hipsbar.setAttribute('data-hipsbar', this.activator);
+      this.hipsbar.appendChild(list);
+      document.body.appendChild(this.hipsbar);
     }
   }, {
-    key: 'isFullWidth',
-    value: function isFullWidth() {
-      return this.position == 'bottom' || this.position == 'top';
+    key: 'initData',
+    value: function initData() {
+      var _this = this;
+
+      if (this.dataURL) {
+        fetch(this.dataURL).then(function (res) {
+          return res.json();
+        }).then(function (data) {
+          _this.initNodes(data);
+        });
+      } else {
+        this.initNodes(this.data);
+      }
     }
   }, {
     key: 'addActivatorListener',
     value: function addActivatorListener() {
-      var _this = this;
+      var _this2 = this;
 
       var el = this.activatorNode;
       el.setAttribute('data-hipsbar-activator', this.activator);
       el.addEventListener('click', function (e) {
-        _this.hipsbar.classList.toggle('is--active');
+        _this2.hipsbar.classList.toggle('is--active');
         setTimeout(function () {
-          _this.handleOverlay();
-          _this.addBlur();
+          _this2.handleOverlay();
+          _this2.addBlur();
         }, 0);
         e.preventDefault();
       });
@@ -284,26 +334,37 @@ var Hipsbar = function () {
   }, {
     key: 'addCloseListener',
     value: function addCloseListener() {
-      var _this2 = this;
+      var _this3 = this;
 
-      document.addEventListener('click', function (e) {
-        if (e.target !== _this2.hipsbar && !_this2.hipsbar.contains(e.target) && e.target !== _this2.activatorNode) {
-          _this2.closeHipsbar();
-        }
+      window.addEventListener('click', function (e) {
+        _this3.closeHipsbar();
+      });
+      this.hipsbar.addEventListener('click', function (e) {
+        e.stopPropagation();
+      });
+      this.activatorNode.addEventListener('click', function (e) {
+        e.stopPropagation();
       });
     }
   }, {
     key: 'closeHipsbar',
     value: function closeHipsbar() {
-      document.querySelector('.hipsbar--overlay').classList.remove('is--active');
       document.body.classList.remove('blurred--overlay');
       this.hipsbar.classList.remove('is--active');
+      this.closeOverlay();
     }
   }, {
     key: 'addOverlay',
     value: function addOverlay() {
       if (this.overlay) {
         (0, _lib.createOverlay)();
+      }
+    }
+  }, {
+    key: 'closeOverlay',
+    value: function closeOverlay() {
+      if (this.overlay) {
+        document.querySelector('.hipsbar--overlay').classList.remove('is--active');
       }
     }
   }, {
@@ -321,8 +382,17 @@ var Hipsbar = function () {
       }
     }
   }, {
+    key: 'initStyles',
+    value: function initStyles() {
+      if (!this.isFullWidth) {
+        this.hipsbar.style.width = this.width + 'px';
+      }
+    }
+  }, {
     key: 'initHooks',
     value: function initHooks() {
+      this.initData();
+      this.initStyles();
       this.addOverlay();
       this.addActivatorListener();
       this.addCloseListener();
@@ -333,18 +403,13 @@ var Hipsbar = function () {
       var hipsbar = document.createElement('div');
       hipsbar.classList.add('hipsbar--wrapper', 'is--' + this.position);
 
-      if (!this.isFullWidth()) {
-        hipsbar.style.width = this.width + 'px';
-      }
-
-      var list = this.initNodes();
-      hipsbar.setAttribute('data-hipsbar', this.activator);
-
-      hipsbar.appendChild(list);
-      document.body.appendChild(hipsbar);
-
       this.hipsbar = hipsbar;
       this.initHooks();
+    }
+  }, {
+    key: 'isFullWidth',
+    get: function get() {
+      return this.position == 'bottom' || this.position == 'top';
     }
   }]);
 
@@ -381,7 +446,7 @@ var parent = module.bundle.parent;
 if ((!parent || !parent.isParcelRequire) && typeof WebSocket !== 'undefined') {
   var hostname = '' || location.hostname;
   var protocol = location.protocol === 'https:' ? 'wss' : 'ws';
-  var ws = new WebSocket(protocol + '://' + hostname + ':' + '60164' + '/');
+  var ws = new WebSocket(protocol + '://' + hostname + ':' + '59275' + '/');
   ws.onmessage = function (event) {
     var data = JSON.parse(event.data);
 
