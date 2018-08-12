@@ -1,4 +1,5 @@
 
+
 # Hipsbar JS
 
 Hipsbar.js is a tiny dependency free javascript plugin for creating sliding drawers in web apps. You can easily use it as sidebar menus or option drawers.
@@ -62,7 +63,17 @@ const data = [
   ...
 ]
 ```
-
+### Load Via Ajax Url
+Load data from the newly set data source URL.
+Avoid using data and dataURL together.
+##### Usage
+```javascript
+new Hipsbar({
+  ...
+  dataURL: 'https://api.myjson.com/bins/191ibw'
+  ...
+})
+```
 ### Installation
 Install the dependencies and devDependencies and start the server.
 ```sh
