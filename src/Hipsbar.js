@@ -18,7 +18,7 @@ class Hipsbar {
 
     this.activator = activator
     this.data = data || []
-    this.dataURL = dataURL || []
+    this.dataURL = dataURL || ''
     this.overlay = overlay || false
     this.blur = blur || false
     this.position = position || 'left'
