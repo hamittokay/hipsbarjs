@@ -40,7 +40,7 @@ Your items can have child items as many as you want. Hipsbar will mount them to 
 const data = [
   ...
   {
-    content: 'LANGUAGES',
+    content: 'JS FRAMEWORKS',
     children: [
       {
         content: 'VUE',
